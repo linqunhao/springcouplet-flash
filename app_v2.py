@@ -2,7 +2,7 @@
 # 美化版 + 红包功能
 
 import streamlit as st
-from openai import OpenAI
+from groq import Groq
 import random
 import json
 import os
@@ -275,7 +275,7 @@ st.markdown("""
 # 侧边栏 - API设置
 with st.sidebar:
     st.markdown("### ⚙️ 设置")
-    api_key = st.text_input("OpenAI API Key", type="password", 
+    api_key = st.text_input("Groq API Key", type="password", 
                            value=os.getenv("OPENAI_API_KEY", ""))
     
     st.markdown("---")
@@ -311,13 +311,14 @@ with col3:
 # 生成按钮
 if st.button("🎯 生成我的专属春联", use_container_width=True):
     if not api_key:
-        st.error("⚠️ 请先输入OpenAI API Key（在左侧设置中）")
+        st.error("⚠️ 请先输入Groq API Key（在左侧设置中）")
     elif not all([keyword1, keyword2, keyword3]):
         st.warning("⚠️ 请填写3个关键词")
     else:
         with st.spinner("🎨 AI正在挥毫泼墨..."):
             try:
-                client = OpenAI(api_key=api_key)
+                # 使用Groq API
+                client = Groq(api_key=api_key)
                 
                 # 生成对联
                 prompt = f"""你是一位精通中华传统文化的对联大师。请根据以下3个关键词，创作一副优美、吉祥、有文化底蕴的春联：
@@ -339,7 +340,7 @@ if st.button("🎯 生成我的专属春联", use_container_width=True):
 解读：[简要说明对联的寓意和巧妙之处]"""
                 
                 response = client.chat.completions.create(
-                    model="gpt-3.5-turbo",
+                    model="llama-3.3-70b-versatile",
                     messages=[{"role": "user", "content": prompt}],
                     temperature=0.8,
                     max_tokens=300
